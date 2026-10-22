@@ -79,6 +79,12 @@ test('app shell exposes investigation, compare, source map, saved and privacy vi
 
 test('integrated web search is configured through a server endpoint, never a browser API key', () => {
   assert.match(html, /SEARCH_API_ENDPOINT='https:\/\/crelics-search\.quillstarcross\.workers\.dev\/search'/);
-  assert.match(html, /async function webSearch\(q\)/);
+  assert.match(html, /async function webSearch\(q,page=1\)/);
+  assert.match(html, /limit:'20'/);
+  assert.match(html, /async function loadMore\(\)/);
+  assert.match(html, /function observeLoadMore\(\)/);
+  for (const mode of ['adaptive','lucy','hari','spock','sherlock','doctor','valerian']) {
+    assert.ok(html.includes("'"+mode+"'"), 'missing discovery POV: '+mode);
+  }
   assert.doesNotMatch(html, /TAVILY_API_KEY\s*[:=]/);
 });
