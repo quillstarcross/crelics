@@ -1,0 +1,35 @@
+name: Validate CRELICS
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate embedded JavaScript syntax
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const html = fs.readFileSync('index.html', 'utf8');
+          const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/gi)];
+          if (!scripts.length) throw new Error('No inline application script found');
+          scripts.forEach((match, i) => {
+            new Function(match[1]);
+            console.log(`Inline script ${i + 1}: syntax OK`);
+          });
+          NODE
+      - name: Check required app shell
+        run: |
+          grep -q 'id="searchForm"' index.html
+          grep -q 'id="categories"' index.html
+          grep -q 'id="resultList"' index.html
+          grep -q 'CRELICS' index.html
