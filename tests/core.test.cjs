@@ -78,7 +78,7 @@ test('app shell exposes investigation, compare, source map, saved and privacy vi
 });
 
 test('integrated web search is configured through a server endpoint, never a browser API key', () => {
-  assert.match(html, /SEARCH_API_ENDPOINT='https:\/\/crelics-search\.YOUR-SUBDOMAIN\.workers\.dev\/search'/);
+  assert.match(html, /SEARCH_API_ENDPOINT='https:\/\/crelics-search\.quillstarcross\.workers\.dev\/search'/);
   assert.match(html, /async function webSearch\(q\)/);
   assert.doesNotMatch(html, /TAVILY_API_KEY\s*[:=]/);
 });
