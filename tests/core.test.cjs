@@ -23,10 +23,10 @@ const context = {
   reference: () => {}, research: () => {}, books: () => {}, images: () => {}, news: () => {}
 };
 vm.createContext(context);
-vm.runInContext(safeUrlSource + '\n' + linkSource + '\n' + providerSource + '\n' + normalizeSource, context);
+vm.runInContext(safeUrlSource + '\n' + linkSource + '\n' + providerSource + '\n' + normalizeSource + '\nglobalThis.__test = { safeUrl, linkFor, providerPlan, normalize };', context);
 
 test('URL sanitizer allows HTTP(S) and rejects unsafe or malformed URLs', () => {
-  assert.equal(context.safeUrl('https://example.com/path'), 'https://example.com/path');
+  assert.equal(context.__test.safeUrl('https://example.com/path'), 'https://example.com/path');
   assert.equal(context.safeUrl('http://example.com'), 'http://example.com/');
   assert.equal(context.safeUrl('javascript:alert(1)'), null);
   assert.equal(context.safeUrl('data:text/html,hello'), null);
@@ -34,7 +34,7 @@ test('URL sanitizer allows HTTP(S) and rejects unsafe or malformed URLs', () => 
 });
 
 test('record normalization rejects unsafe links and preserves source metadata', () => {
-  assert.equal(context.normalize({title:'bad',url:'javascript:alert(1)'}), null);
+  assert.equal(context.__test.normalize({title:'bad',url:'javascript:alert(1)'}), null);
   const item = context.normalize({id:'abc',title:'Example',url:'https://example.com',source:'Test source',kind:'Research',date:'2026'});
   assert.equal(item.title, 'Example');
   assert.equal(item.source, 'Test source');
@@ -43,7 +43,7 @@ test('record normalization rejects unsafe links and preserves source metadata', 
 });
 
 test('dedicated lenses route to the correct public source adapter', () => {
-  assert.equal(context.providerPlan('research').map(x => x.name).join(','), 'Crossref research');
+  assert.equal(context.__test.providerPlan('research').map(x => x.name).join(','), 'Crossref research');
   assert.equal(context.providerPlan('books').map(x => x.name).join(','), 'Open Library books');
   assert.equal(context.providerPlan('images').map(x => x.name).join(','), 'Wikimedia Commons');
   assert.equal(context.providerPlan('news').map(x => x.name).join(','), 'GDELT news index');
@@ -58,7 +58,7 @@ test('external-only lenses do not accidentally return unrelated API providers', 
 });
 
 test('external search links encode queries and use the intended destinations', () => {
-  const links = context.linkFor('robotics & AI');
+  const links = context.__test.linkFor('robotics & AI');
   assert.match(links.videos[1], /^https:\/\/www\.youtube\.com\/results\?/);
   assert.match(links.places[1], /^https:\/\/www\.google\.com\/maps\/search\//);
   assert.match(links.products[1], /tbm=shop/);
