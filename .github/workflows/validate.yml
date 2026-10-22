@@ -32,6 +32,6 @@ jobs:
       - name: Check required app shell
         run: |
           grep -q 'id="searchForm"' index.html
-          grep -q 'id="categories"' index.html
+          grep -q 'id="lenses"' index.html
           grep -q 'id="resultList"' index.html
           grep -q 'CRELICS' index.html
