@@ -119,7 +119,7 @@ function safeHttpUrl(value) {
 function normalizeUrl(value) {
   const safe = safeHttpUrl(value);
   if (!safe) return "";
-  try { const u = new URL(safe); u.hash = ""; if (u.pathname.length > 1) u.pathname = u.pathname.replace(/\\/$/, ""); return u.href.toLowerCase(); }
+  try { const u = new URL(safe); u.hash = ""; if (u.pathname.length > 1) u.pathname = u.pathname.replace(/\/$/, ""); return u.href.toLowerCase(); }
   catch { return ""; }
 }
 function hostname(value) {
