@@ -5,73 +5,32 @@
 - **Live app:** https://quillstarcross.github.io/crelics/
 - **Source:** https://github.com/quillstarcross/crelics
 
-## Current capabilities
+## Search behavior
 
-- Search public reference pages through Wikipedia's API.
-- Search scholarly metadata through Crossref.
-- Search book catalog records through Open Library.
-- Search images through Wikimedia Commons, including links to the original file pages.
-- Search news articles through GDELT.
-- Use clearly labeled external handoffs for video, places/maps, products, and community discussions.
-- Save sources and recent queries in browser-local storage.
-- Switch between dark and light themes.
-- Open original source pages, copy links, and filter by search lens.
+- **General Web Search / Web:** intended to show live web search results directly inside CRELICS through a server-side search adapter. Until the Worker is deployed and configured, these lenses provide direct provider links instead of routing through Wikipedia.
+- **Research:** Crossref scholarly metadata.
+- **Books:** Open Library catalog.
+- **Images:** Wikimedia Commons.
+- **News:** GDELT news index.
+- **Videos, places, products, discussions:** clearly labelled direct provider handoffs; CRELICS does not claim to index these results itself.
+- Save sources and recent queries locally, compare records, export investigation data, and switch themes.
 
-## How search is routed
+## Enable integrated web search
 
-| Lens | Current route |
-| --- | --- |
-| All | Wikipedia + Crossref + Open Library |
-| Web | Wikipedia reference search |
-| Research | Crossref works metadata |
-| Books | Open Library catalog |
-| Images | Wikimedia Commons |
-| News | GDELT article search |
-| Videos | External YouTube search handoff |
-| Places | External Google Maps search handoff |
-| Products | External shopping search handoff |
-| Discussions | External Reddit search handoff |
+The frontend is a GitHub Pages static site, so a private search API key must never be placed in `index.html`. The included Cloudflare Worker proxies Tavily search and keeps its key server-side.
 
-The external-handoff lenses deliberately do **not** pretend that external results are indexed or ranked by CRELICS. They take the query to the selected provider.
+1. Create a free Tavily account and create an API key: https://www.tavily.com/
+2. Create/deploy the Worker from this repository using Cloudflare's dashboard or Wrangler. Worker source: `worker/index.js`; configuration: `wrangler.toml`.
+3. Add the key to the Worker as a **Secret** named `TAVILY_API_KEY` (Cloudflare dashboard → Workers & Pages → your Worker → Settings → Variables and Secrets → Add → Secret). Never commit the key to GitHub.
+4. Verify `https://YOUR-WORKER.workers.dev/health` reports `ok: true` and `providerConfigured: true`.
+5. In `index.html`, replace `https://crelics-search.YOUR-SUBDOMAIN.workers.dev/search` with your deployed Worker URL plus `/search`. Commit the change. General Web Search and Web will then render provider results in CRELICS.
+
+Official references: Cloudflare Worker secrets documentation: https://developers.cloudflare.com/workers/configuration/secrets/ and Tavily API documentation: https://help.tavily.com/articles/4840311948-tavily-search-api.
 
 ## Run locally
 
-This first version is a static site and needs no build step:
+The UI is static and needs no build step. Serve the folder with `python -m http.server 8000` and open `http://localhost:8000`. The Worker requires Wrangler and a local secret in `.dev.vars` (never commit it); see Cloudflare's secrets guide.
 
-1. Clone this repository.
-2. Open `index.html` in a browser, or serve the folder with any static HTTP server.
-3. Search queries require network access to the selected public APIs.
+## Privacy and limitations
 
-For example, with Python installed:
-
-```sh
-python -m http.server 8000
-```
-
-Then open `http://localhost:8000`.
-
-## Privacy and data handling
-
-Search queries are sent to the selected third-party providers. Saved sources, recent searches, and theme preference are stored in this browser's local storage. This prototype has no CRELICS account system or server-side query history. Provider sites have their own privacy policies and may collect data when you open their links.
-
-## Known limitations
-
-- This is a client-side prototype, not a web crawler, general web index, or production metasearch backend.
-- Public APIs can rate-limit, change response formats, or be unavailable.
-- Result coverage, summaries, dates, and metadata depend on each provider and may be incomplete.
-- CRELICS does not independently verify the truth, credibility, licensing, or safety of returned sources.
-- A production system will need server-side provider adapters, stronger observability, caching, rate-limit handling, accessible interaction tests, and a clearly documented data-retention model.
-
-## Engineering roadmap
-
-1. Add regression tests for routing, escaping, and result normalization.
-2. Improve error states, timeout handling, and accessible loading announcements.
-3. Add provider adapter contracts, caching and request budgets.
-4. Evaluate source quality signals without confusing popularity with truth.
-5. Design a backend API before adding accounts, shared libraries, or server-side history.
-6. Expand sources only where their API terms, reliability, and privacy requirements can be respected.
-
-## Project structure
-
-- `index.html`: self-contained UI, public-source adapters, routing and browser-local persistence.
-- `.github/workflows/validate.yml`: CI syntax and app-shell checks.
+Search queries are sent to the provider configured for the selected lens. The integrated search backend forwards the query to Tavily and returns web results; CRELICS does not independently verify truth or guarantee exhaustive coverage. Saved sources, recent searches and theme preference remain in browser localStorage. Provider terms, usage limits, availability, ranking and data practices apply. The Worker allows the GitHub Pages origin and localhost development origins; configure any custom domain explicitly before using it.
