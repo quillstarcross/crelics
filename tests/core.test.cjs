@@ -27,10 +27,10 @@ vm.runInContext(safeUrlSource + '\n' + linkSource + '\n' + providerSource + '\n'
 
 test('URL sanitizer allows HTTP(S) and rejects unsafe or malformed URLs', () => {
   assert.equal(context.__test.safeUrl('https://example.com/path'), 'https://example.com/path');
-  assert.equal(context.safeUrl('http://example.com'), 'http://example.com/');
-  assert.equal(context.safeUrl('javascript:alert(1)'), null);
-  assert.equal(context.safeUrl('data:text/html,hello'), null);
-  assert.equal(context.safeUrl('not a url'), null);
+  assert.equal(context.__test.safeUrl('http://example.com'), 'http://example.com/');
+  assert.equal(context.__test.safeUrl('javascript:alert(1)'), null);
+  assert.equal(context.__test.safeUrl('data:text/html,hello'), null);
+  assert.equal(context.__test.safeUrl('not a url'), null);
 });
 
 test('record normalization rejects unsafe links and preserves source metadata', () => {
