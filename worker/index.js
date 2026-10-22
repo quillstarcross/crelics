@@ -32,6 +32,7 @@ export default {
     if (q.length < 2 || q.length > 300) return json({ error: "Query must be between 2 and 300 characters" }, 400, corsOrigin);
     if (!env.TAVILY_API_KEY) return json({ error: "Search provider is not configured. Add TAVILY_API_KEY as a Worker secret." }, 503, corsOrigin);
     const page = Math.max(1, Math.min(100, Number.parseInt(url.searchParams.get("page") || "1", 10) || 1));
+    const mode = (url.searchParams.get("mode") || "adaptive").toLowerCase();
     const limit = Math.max(10, Math.min(20, Number.parseInt(url.searchParams.get("limit") || "20", 10) || 20));
     let seenUrls = [];
     try {
@@ -43,16 +44,16 @@ export default {
     // later pages use distinct discovery formulations, then deduplicate against
     // URLs already delivered to the browser. This creates progressive exploration
     // without pretending that any upstream index is literally infinite.
-    const expansions = [
-      "",
-      "additional independent sources and useful references",
-      "primary sources reports data and original research",
-      "different perspectives examples case studies",
-      "recent developments and expert analysis",
-      "guides documentation and detailed explanations",
-      "datasets institutions and official publications",
-      "historical context related topics and further reading"
-    ];
+    const expansionSets = {
+      adaptive: ["", "additional independent sources and useful references", "primary sources reports data and original research", "different perspectives examples case studies", "recent developments and expert analysis", "guides documentation and detailed explanations", "datasets institutions and official publications", "historical context related topics and further reading"],
+      lucy: ["", "connections across science technology arts culture and society", "interdisciplinary applications and unexpected connections", "related fields analogous ideas and cross-disciplinary research", "different disciplines perspectives and examples"],
+      hari: ["", "historical trends long term patterns and future scenarios", "timeline data forecasts and historical comparisons", "emerging trends leading indicators and possible futures", "historical context recurring patterns and projections"],
+      spock: ["", "primary evidence data methodology limitations and uncertainty", "systematic reviews datasets and peer reviewed evidence", "conflicting evidence assumptions and alternative explanations", "official statistics methods and reproducible findings"],
+      sherlock: ["", "original documents primary sources and corroborating evidence", "authors dates source documents and traceable references", "case studies investigative reports and supporting evidence", "independent confirmation and source provenance"],
+      doctor: ["", "alternative search terms unexpected sources and adjacent concepts", "new angles practical examples and less obvious sources", "different approaches and overlooked evidence", "related terms specialist sources and alternative explanations"],
+      valerian: ["", "connected worlds communities ecosystems and wider context", "visual explainers interactive resources maps and related topics", "global perspectives cultures institutions and connected fields", "exploratory resources and surprising connections"]
+    };
+    const expansions = expansionSets[mode] || expansionSets.adaptive;
     const base = expansions[(page - 1) % expansions.length];
     const queryVariants = page === 1
       ? [q]
@@ -87,11 +88,12 @@ export default {
         const data = await response.json();
         for (const item of (Array.isArray(data.results) ? data.results : [])) {
           const normalized = normalizeUrl(item.url);
-          if (!normalized || seen.has(normalized) || found.has(normalized)) continue;
+          const safeUrl = safeHttpUrl(item.url);
+          if (!normalized || !safeUrl || seen.has(normalized) || found.has(normalized)) continue;
           found.add(normalized);
           collected.push({
             title: String(item.title || "Untitled result").slice(0, 300),
-            url: normalized,
+            url: safeUrl,
             description: String(item.content || "").slice(0, 1200),
             source: hostname(normalized),
             date: String(item.published_date || "")
