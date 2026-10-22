@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 
 const html = fs.readFileSync('index.html', 'utf8');
-const script = [...html.matchAll(/<script>([\\s\\S]*?)<\\/script>/gi)][0]?.[1];
+const script = [...html.matchAll(/<script>([\s\S]*?)<\/script>/gi)][0]?.[1];
 assert.ok(script, 'application script exists');
 
 function extract(pattern, label) {
@@ -13,18 +13,17 @@ function extract(pattern, label) {
   return match[0];
 }
 
-const safeUrlSource = extract(/const safeUrl=s=>[\\s\\S]*?}\\nconst setStatus/, 'URL sanitizer').replace(/\\nconst setStatus$/, '');
-const linkSource = extract(/function linkFor\\(q\\)[\\s\\S]*?\\nasync function getJson/, 'external provider links').replace(/\\nasync function getJson$/, '');
-const providerSource = extract(/function providerPlan\\(lens\\)[\\s\\S]*?\\nfunction unique/, 'provider routing').replace(/\\nfunction unique$/, '');
-const normalizeSource = extract(/function normalize\\(x\\)[\\s\\S]*?\\nasync function reference/, 'record normalizer').replace(/\\nasync function reference$/, '');
+const safeUrlSource = extract(/const safeUrl=s=>[\s\S]*?;\nconst setStatus/, 'URL sanitizer').replace(/\nconst setStatus$/, '');
+const linkSource = extract(/function linkFor\(q\)[\s\S]*?\nasync function getJson/, 'external provider links').replace(/\nasync function getJson$/, '');
+const providerSource = extract(/function providerPlan\(lens\)[\s\S]*?\nfunction unique/, 'provider routing').replace(/\nfunction unique$/, '');
+const normalizeSource = extract(/function normalize\(x\)[\s\S]*?\nasync function reference/, 'record normalizer').replace(/\nasync function reference$/, '');
 
 const context = {
   URL, encodeURIComponent,
-  reference: () => {}, research: () => {}, books: () => {}, images: () => {}, news: () => {},
-  safeUrl: undefined
+  reference: () => {}, research: () => {}, books: () => {}, images: () => {}, news: () => {}
 };
 vm.createContext(context);
-vm.runInContext(safeUrlSource.replace(/const safeUrl=s=>/, 'const safeUrl=s=>') + '\\n' + linkSource + '\\n' + providerSource + '\\n' + normalizeSource, context);
+vm.runInContext(safeUrlSource + '\n' + linkSource + '\n' + providerSource + '\n' + normalizeSource, context);
 
 test('URL sanitizer allows HTTP(S) and rejects unsafe or malformed URLs', () => {
   assert.equal(context.safeUrl('https://example.com/path'), 'https://example.com/path');
@@ -60,10 +59,10 @@ test('external-only lenses do not accidentally return unrelated API providers', 
 
 test('external search links encode queries and use the intended destinations', () => {
   const links = context.linkFor('robotics & AI');
-  assert.match(links.videos[1], /^https:\\/\\/www\\.youtube\\.com\\/results\\?/);
-  assert.match(links.places[1], /^https:\\/\\/www\\.google\\.com\\/maps\\/search\\//);
+  assert.match(links.videos[1], /^https:\/\/www\.youtube\.com\/results\?/);
+  assert.match(links.places[1], /^https:\/\/www\.google\.com\/maps\/search\//);
   assert.match(links.products[1], /tbm=shop/);
-  assert.match(links.discussions[1], /^https:\\/\\/www\\.reddit\\.com\\/search\\//);
+  assert.match(links.discussions[1], /^https:\/\/www\.reddit\.com\/search\//);
   assert.ok(links.web[1].includes('robotics%20%26%20AI'));
 });
 
