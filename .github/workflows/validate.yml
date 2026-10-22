@@ -27,6 +27,8 @@ jobs:
             console.log(`Inline script ${i + 1}: syntax OK`);
           });
           NODE
+      - name: Run core routing and safety regression tests
+        run: node --test tests/*.test.cjs
       - name: Check required app shell
         run: |
           grep -q 'id="searchForm"' index.html
