@@ -30,6 +30,7 @@ jobs:
       - name: Run core routing and safety regression tests
         run: node --test tests/*.test.cjs
       - name: Check required app shell
+        # Match the current UI IDs; the lens selector is named lenses.
         run: |
           grep -q 'id="searchForm"' index.html
           grep -q 'id="lenses"' index.html
