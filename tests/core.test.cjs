@@ -19,8 +19,8 @@ const providerSource = extract(/function providerPlan\(lens\)[\s\S]*?\nfunction 
 const normalizeSource = extract(/function normalize\(x\)[\s\S]*?\nasync function reference/, 'record normalizer').replace(/\nasync function reference$/, '');
 
 const context = {
-  URL, encodeURIComponent,
-  reference: () => {}, research: () => {}, books: () => {}, images: () => {}, news: () => {}
+  URL, encodeURIComponent, hasSearchBackend: () => false,
+  reference: () => {}, research: () => {}, books: () => {}, images: () => {}, news: () => {}, webSearch: () => {}
 };
 vm.createContext(context);
 vm.runInContext(safeUrlSource + '\n' + linkSource + '\n' + providerSource + '\n' + normalizeSource + '\nglobalThis.__test = { safeUrl, linkFor, providerPlan, normalize };', context);
@@ -47,8 +47,11 @@ test('dedicated lenses route to the correct public source adapter', () => {
   assert.equal(context.providerPlan('books').map(x => x.name).join(','), 'Open Library books');
   assert.equal(context.providerPlan('images').map(x => x.name).join(','), 'Wikimedia Commons');
   assert.equal(context.providerPlan('news').map(x => x.name).join(','), 'GDELT news index');
-  assert.equal(context.providerPlan('web').map(x => x.name).join(','), 'Wikipedia reference');
-  assert.deepEqual(Array.from(context.providerPlan('all'), x => x.name), ['Wikipedia reference','Crossref research','Open Library books']);
+  assert.deepEqual(Array.from(context.providerPlan('web')), []);
+  assert.deepEqual(Array.from(context.providerPlan('all')), []);
+  context.hasSearchBackend = () => true;
+  assert.equal(context.providerPlan('web').map(x => x.name).join(','), 'Live web search');
+  assert.equal(context.providerPlan('all').map(x => x.name).join(','), 'Live web search');
 });
 
 test('external-only lenses do not accidentally return unrelated API providers', () => {
@@ -63,11 +66,19 @@ test('external search links encode queries and use the intended destinations', (
   assert.match(links.places[1], /^https:\/\/www\.google\.com\/maps\/search\//);
   assert.match(links.products[1], /tbm=shop/);
   assert.match(links.discussions[1], /^https:\/\/www\.reddit\.com\/search\//);
-  assert.ok(links.web[1].includes('robotics%20%26%20AI'));
+  assert.ok(links.google[1].includes('robotics%20%26%20AI'));
+  assert.ok(links.bing[1].includes('robotics%20%26%20AI'));
+  assert.ok(links.brave[1].includes('robotics%20%26%20AI'));
 });
 
 test('app shell exposes investigation, compare, source map, saved and privacy views', () => {
   for (const marker of ['data-view="compare"', 'data-view="sources"', 'data-view="saved"', 'data-view="about"', 'id="exportBtn"']) {
     assert.ok(html.includes(marker), 'missing UI marker: ' + marker);
   }
+});
+
+test('integrated web search is configured through a server endpoint, never a browser API key', () => {
+  assert.match(html, /SEARCH_API_ENDPOINT='https:\/\/crelics-search\.YOUR-SUBDOMAIN\.workers\.dev\/search'/);
+  assert.match(html, /async function webSearch\(q\)/);
+  assert.doesNotMatch(html, /TAVILY_API_KEY\s*[:=]/);
 });
