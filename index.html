@@ -60,7 +60,7 @@
 const $ = s => document.querySelector(s);
 const lenses=[['Web Search','all','✳'],['Web','web','⌕'],['Research','research','⌘'],['Books','books','▤'],['Images','images','▧'],['News','news','◉'],['Videos','videos','▶'],['Places','places','⌖'],['Products','products','◇'],['Discussions','discussions','☷']];
 const keys={saved:'crelics.saved.v2',history:'crelics.history.v2',theme:'crelics.theme.v2'};
-const SEARCH_API_ENDPOINT='https://crelics-search.YOUR-SUBDOMAIN.workers.dev/search';
+const SEARCH_API_ENDPOINT='https://crelics-search.quillstarcross.workers.dev/search';
 const hasSearchBackend=()=>SEARCH_API_ENDPOINT.startsWith('https://')&&!SEARCH_API_ENDPOINT.includes('YOUR-SUBDOMAIN');
 const read=(k,fb=[])=>{try{const v=JSON.parse(localStorage.getItem(k));return Array.isArray(fb)?(Array.isArray(v)?v:fb):(v??fb)}catch{return fb}};
 const write=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
