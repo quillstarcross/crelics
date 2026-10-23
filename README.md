@@ -38,7 +38,7 @@ The CSS design system is separate from the HTML and application logic. The inter
 
 ## Search architecture
 
-The browser module manages query state, source lenses, perspective selection, saved items, history, and progressive results. The Worker entry point validates requests and handles HTTP policy. Its core module owns validation and URL normalization. The Tavily adapter handles provider-specific requests, result normalization, deduplication, and POV-inspired query expansion.
+The browser is split into a minimal entry point, explicit product configuration, browser-local storage, DOM utilities, a dedicated search transport adapter, and UI orchestration. This keeps provider networking and interface concerns from becoming one monolithic script. The Worker entry point validates requests and handles HTTP policy. Its core module owns validation and URL normalization. The Tavily adapter handles provider-specific requests, result normalization, deduplication, and POV-inspired query expansion.
 
 The six perspectives are **query strategies**, not six autonomous AI agents:
 
