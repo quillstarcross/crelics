@@ -59,3 +59,98 @@ input:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid #e7c9
 @keyframes petalDrift{from{transform:translateY(-3px) rotate(-12deg)}to{transform:translateY(9px) rotate(12deg)}}
 @keyframes celestialPulse{from{filter:saturate(.85);transform:scale(.97)}to{filter:saturate(1.2);transform:scale(1.03)}}
 @keyframes forestShift{from{transform:translateX(-2%) rotate(-8deg)}to{transform:translateX(2%) rotate(-5deg)}}
+
+
+/* ── Celestial bamboo / immortal-grove visual upgrade ── */
+:root{
+  --paper:#060d12;--white:#0c1720;--ink:#f6f3f8;--muted:#aab7c7;--line:#263546;
+  --red:#f34e67;--red2:#ff8290;--branch:#111d20;--rose:#332039;--card:#0d1924;
+  --violet:#9b7bff;--blue:#82d8ff;--gold:#f0d49a;--leaf:#a6f080;
+}
+html{background:#060d12}
+body{
+ background:
+  radial-gradient(ellipse at 12% 8%,#173b2d 0,transparent 28%),
+  radial-gradient(ellipse at 85% 18%,#25214e 0,transparent 30%),
+  radial-gradient(ellipse at 74% 66%,#30112c 0,transparent 35%),
+  linear-gradient(155deg,#050b10 0%,#0b1820 46%,#0c0a18 100%);
+}
+body:before{
+ z-index:0;opacity:.5;mix-blend-mode:screen;
+ background:
+  repeating-linear-gradient(112deg,transparent 0 95px,#a3d9800a 96px 98px,transparent 99px 155px),
+  radial-gradient(ellipse at 20% 30%,#75c78c17,transparent 30%),
+  radial-gradient(ellipse at 90% 55%,#8b72ff15,transparent 35%);
+}
+.top{border-color:#d9e7ff1b}
+.brand{color:#f6f0ff;text-shadow:0 0 24px #b6a0ff20}
+.sigil{background:linear-gradient(145deg,#173a31,#17152a);border:1px solid #f0d49a66;color:#f7e8c2}
+.sigil:after{border-color:#ff627b}
+.topnote,.section-label,.kicker,.suggest-label{color:#a9c9c2}
+.hero{min-height:430px;grid-template-columns:minmax(0,1.04fr) minmax(300px,.96fr);gap:32px}
+.hero h1{font-size:clamp(46px,6.6vw,88px);line-height:.96;letter-spacing:-.065em;text-shadow:0 8px 42px #0005}
+.hero h1 span{
+ background:linear-gradient(100deg,#ff778a 0%,#c9a2ff 43%,#88d9ff 72%,#e9d6a2 100%);
+ -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero p{color:#bac9d1;max-width:560px}
+.art{
+ min-height:335px;overflow:hidden;border-radius:46% 46% 28px 28px;
+ border:1px solid #d9e9ff25;
+ background:
+  radial-gradient(ellipse at 50% 26%,#c8e8ef77 0 1%,#628a9b44 8%,transparent 27%),
+  radial-gradient(ellipse at 52% 42%,#7753a577,transparent 34%),
+  radial-gradient(ellipse at 72% 67%,#ba345a44,transparent 27%),
+  radial-gradient(ellipse at 20% 68%,#3a9b6b66,transparent 35%),
+  linear-gradient(150deg,#102d25,#111a2c 50%,#21102a);
+ box-shadow:inset 0 0 100px #020609c9,0 28px 90px #0007;
+}
+.art:before{
+ content:"";position:absolute;inset:-15%;z-index:0;
+ background:
+  linear-gradient(72deg,transparent 0 17%,#b2e78c28 17.2% 17.6%,transparent 18% 43%,#91d68c20 43.2% 43.6%,transparent 44%),
+  linear-gradient(108deg,transparent 0 26%,#77c99b22 26.2% 26.7%,transparent 27% 66%,#8ed5a222 66.2% 66.6%,transparent 67%),
+  repeating-linear-gradient(82deg,transparent 0 56px,#c4efb50d 57px 59px,transparent 60px 94px);
+ transform:rotate(-8deg);
+}
+.art:after{
+ content:"";position:absolute;z-index:1;width:48%;height:76%;left:26%;top:12%;
+ border-radius:48% 52% 40% 40%;
+ background:
+  radial-gradient(ellipse at 47% 20%,#f2e5f3 0 2%,#b4d9e8 4%,transparent 27%),
+  linear-gradient(135deg,#c8e9e9cc,#6c80b6aa 38%,#302343eF 68%,#a8204cdd);
+ border:1px solid #f2e0c877;
+ box-shadow:inset 0 0 34px #e3dfff55,0 0 60px #89d8ff20;
+ clip-path:polygon(18% 0,82% 0,100% 36%,78% 100%,22% 100%,0 36%);
+}
+.orbit{border-color:#d7e4ff66;box-shadow:0 0 25px #94dfff12}
+.orbit.o2{border-color:#b6a0ff66}
+.branch{background:linear-gradient(90deg,#101d1b,#a5d7a355,#17252b);box-shadow:0 0 10px #a6df8325}
+.orb{background:radial-gradient(circle at 35% 24%,#f4ffff,#a8d7e2 13%,#786da7 43%,#34223e 73%,#10151c);box-shadow:0 0 48px #9bcfff55,inset -12px -15px 24px #070b17}
+.petal{background:linear-gradient(145deg,#ff9c9b,#f04465 55%,#851843);box-shadow:0 0 24px #f044653b}
+.art-caption{color:#e2e8ee;background:#07111bd9;border:1px solid #ffffff18;border-radius:999px;padding:7px 12px}
+.search-area{background:#0b1720df;border-color:#dce8ff25;box-shadow:0 28px 90px #0006;backdrop-filter:blur(22px)}
+.search-form input{color:#fff}.search-form input::placeholder{color:#8497a9}.search-mark{color:#ff7186}
+.btn,.chip,.lens,.pov{background:#101c28c9;border-color:#dce8ff24;color:#e9eff8;backdrop-filter:blur(14px)}
+.btn.primary{background:linear-gradient(115deg,#d52c4d,#742b7d);border-color:#f06a8a;box-shadow:0 10px 30px #a21b493d}
+.lens[aria-pressed=true],.pov[aria-pressed=true]{background:linear-gradient(120deg,#6f1b3c,#39265e);border-color:#d87992;color:#fff;box-shadow:0 0 0 3px #df54741c}
+.workspace,.rail,.content{background:#0b1620df;border-color:#dce8ff1c;box-shadow:0 20px 65px #0003}
+.rail button{color:#b8c8d8}.rail button.active,.rail button:hover{background:#ffffff0c;color:#fff;box-shadow:inset 2px 0 #f34e67}
+.rail-title{color:#d0d9e8}.privacy-mini{color:#94a8b8;border-color:#ffffff16}
+.content-head h2{color:#f6f1fa}.sub{color:#9eb2c4}
+.metric{background:linear-gradient(145deg,#ffffff08,#9a8dff05);border-color:#ffffff17}
+.metric strong{color:#f0d49a}.metric span{color:#9eb1c2}
+.tabs{border-color:#ffffff1a}.tab{color:#a9b7c7}.tab[aria-selected=true]{background:#392033;color:#ff93a2}
+.card,.result-card,.empty,.notice{background:linear-gradient(145deg,#111f2b,#0e1722);border-color:#ffffff1b;color:#eaf0f8}
+.card:hover{border-color:#c783dc66;box-shadow:0 14px 38px #0004}
+.card h3,.result-card h3,.result-title a{color:#f7f1ff}
+.card p,.result-card p,.result-description{color:#b2c0cf}
+.source-icon{background:#291c35;border-color:#805c8b88;color:#ffc0cd}
+.source-line,.result-domain,.result-meta{color:#a9c9d8}
+.card-actions button,.result-actions button{background:#ffffff08;border-color:#ffffff22;color:#c8d5e4}
+.card-actions button:hover{border-color:#f16d8c;color:#ff9bad}
+.footer{border-color:#ffffff20;color:#9dafbf}.footer strong{color:#f4dcae}.footer span{color:#8298aa}
+a{color:#ff91a4}
+@media(max-width:760px){.hero{grid-template-columns:1fr}.art{min-height:230px;max-width:390px;width:100%;margin:0 auto}.hero h1{font-size:clamp(42px,12vw,68px)}}
+@media(prefers-reduced-motion:reduce){.art:before,.petal,.orb{animation:none!important}}
+
