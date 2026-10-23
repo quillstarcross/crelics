@@ -1,34 +1,81 @@
 # CRELICS
 
-**Search beyond the obvious.** CRELICS is an independent search and discovery workspace built around progressive web discovery, cross-disciplinary exploration, source traceability, and user-controlled investigation.
+**Search with a different point of view.** CRELICS is a web-discovery engine inspired by the image's porcelain, branching, and crimson visual language. Its product architecture separates the interface, discovery experience, request policy, and upstream search provider.
 
 - **Live app:** https://quillstarcross.github.io/crelics/
 - **Source:** https://github.com/quillstarcross/crelics
+- **Search API:** https://crelics-search.quillstarcross.workers.dev
 
-## Search experience
+## Product architecture
 
-- **Progressive web search:** results appear inside CRELICS. The first batch contains up to 20 records; scrolling toward the end automatically discovers more, and a manual “Load more results” control is available as well.
-- **Adaptive discovery POVs:** Adaptive, Lucy (cross-disciplinary connections), Hari (historical patterns and futures), Spock (logic, evidence and uncertainty), Sherlock (source tracing and corroboration), The Doctor (adaptive search strategy), and Valerian (interconnected exploration). These modes influence the discovery queries used for later batches.
-- **Focused lenses:** Research uses Crossref metadata; Books uses Open Library; Images uses Wikimedia Commons; News uses GDELT. Video, places, products and discussions currently provide clearly labelled external handoffs rather than pretending CRELICS has its own index for them.
-- **Investigation tools:** save sources, review local search history, compare records, inspect publisher domains, export results, and switch between dark and light themes.
+```text
+index.html                  Semantic application shell
+assets/
+  crelics.css               Visual design system and responsive layouts
+  crelics.js                Search orchestration and UI state
+worker/
+  index.js                  HTTP entry point and route orchestration
+  core.js                   Request validation, CORS and URL normalization
+  providers/
+    tavily.js               Search-provider adapter and query expansion
+tests/
+  core.test.cjs             Structural and safety regression checks
+wrangler.toml               Cloudflare Worker deployment configuration
+.github/workflows/
+  deploy-worker.yml         Worker deployment automation
+```
 
-## What “more results” means
+## The design language is the product language
 
-CRELICS does not currently crawl and index the whole web itself. Its integrated web results come from Tavily, which does not expose a simple numeric page offset for its search API. To keep discovery moving beyond the first batch, CRELICS requests up to 20 results at a time, uses alternate query formulations informed by the selected discovery POV, and removes URLs already delivered. Scrolling can continue while the upstream provider returns new sources. It is a progressive discovery stream, **not a guarantee of literally infinite or exhaustive results**. Coverage, availability, ranking and usage limits still depend on the upstream provider. Building a truly independent, Google-scale web index would require a crawler, index infrastructure, ranking systems, spam defenses and substantial ongoing compute.
+The source image is translated into the whole experience rather than used as a decorative wallpaper:
 
-## Search backend
+- **Porcelain:** pale sculptural surfaces, quiet negative space, and layered cards.
+- **Crimson blossoms:** a restrained red signal for actions, active states, and discovery.
+- **Black branches:** a metaphor for source provenance and connections between ideas.
+- **The fractures:** multiple paths through a question, never a claim that one answer is complete.
 
-The static GitHub Pages interface calls a Cloudflare Worker, which keeps the Tavily key server-side. The private key must never be placed in index.html or committed to the repository.
+The CSS design system is separate from the HTML and application logic. The interface is mobile-first, keyboard-accessible, and respects reduced-motion preferences.
 
-- Worker source: worker/index.js
-- Worker configuration: wrangler.toml
-- Required Worker secret: TAVILY_API_KEY
-- Health check: https://crelics-search.quillstarcross.workers.dev/health
+## Search architecture
 
-## Run locally
+The browser module manages query state, source lenses, perspective selection, saved items, history, and progressive results. The Worker entry point validates requests and handles HTTP policy. Its core module owns validation and URL normalization. The Tavily adapter handles provider-specific requests, result normalization, deduplication, and POV-inspired query expansion.
 
-The interface is static and needs no build step. Serve the folder with python -m http.server 8000 and open http://localhost:8000. The Worker requires Wrangler and a local secret in .dev.vars (never commit it).
+The six perspectives are **query strategies**, not six autonomous AI agents:
 
-## Privacy and limitations
+- **Adaptive:** general discovery.
+- **Lucy:** cross-disciplinary connections.
+- **Hari Seldon:** historical patterns and possible futures.
+- **Spock:** evidence, methods, and uncertainty.
+- **Sherlock Holmes:** original documents and corroboration.
+- **The Doctor:** alternative routes and overlooked terminology.
+- **Valerian:** connected fields and wider context.
 
-Queries are sent to the provider configured for the selected lens. Saved sources, recent searches and theme preference stay in browser localStorage; the static app does not maintain CRELICS server-side search history. CRELICS does not automatically verify truth or treat a publisher-domain count as a credibility score. Inspect original sources, authors, dates, methods and supporting evidence. API terms, ranking, availability and data practices apply.
+CRELICS currently uses Tavily for web search. Progressive requests explore alternate query formulations because this provider does not expose numeric offset pagination through this integration. This is not infinite search and does not guarantee exhaustive coverage.
+
+## Current source lenses
+
+The interface offers All Web, Web, Research, Books, Images, News, Videos, Places, Products, and Discussions. The active Worker provides general web results; category-specific sources and rich media integrations are not all implemented as dedicated backend providers yet. The UI must not imply otherwise. Dedicated image/video/place/product/discussion retrieval is a future provider-layer expansion.
+
+## Configuration and deployment
+
+- Set `TAVILY_API_KEY` as a **Cloudflare Worker secret**. Never put provider secrets in browser code.
+- `wrangler.toml` defines the Worker entry point.
+- The GitHub Actions workflow deploys the Worker when relevant backend files change.
+- GitHub Pages serves the static frontend.
+- Saved sources, search history, and appearance preference are stored locally in the user's browser.
+
+## Reliability and privacy
+
+- Query length and pagination are bounded.
+- Only HTTP(S) source links are accepted from the provider.
+- Search requests are sent to the configured provider.
+- Local saves and history are stored in browser storage.
+- Search results depend on the provider's index, ranking, and availability. Verify important claims at the original source.
+
+## Development
+
+The project uses native browser JavaScript modules and Cloudflare Worker ES modules; no frontend bundler is required. Run the test suite with Node.js:
+
+```sh
+node --test tests/core.test.cjs
+```
