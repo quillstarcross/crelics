@@ -15,24 +15,24 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Validate embedded JavaScript syntax
+      - name: Validate frontend ES-module syntax
         run: |
-          node - <<'NODE'
-          const fs = require('node:fs');
-          const html = fs.readFileSync('index.html', 'utf8');
-          const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/gi)];
-          if (!scripts.length) throw new Error('No inline application script found');
-          scripts.forEach((match, i) => {
-            new Function(match[1]);
-            console.log(`Inline script ${i + 1}: syntax OK`);
-          });
-          NODE
+          for file in assets/crelics.js assets/app/*.js; do
+            echo "Checking $file"
+            node --input-type=module --check < "$file"
+          done
+      - name: Validate Worker module syntax
+        run: |
+          for file in worker/index.js worker/core.js worker/providers/*.js; do
+            echo "Checking $file"
+            node --input-type=module --check < "$file"
+          done
       - name: Run core routing and safety regression tests
         run: node --test tests/*.test.cjs
       - name: Check required app shell
-        # Match the current UI IDs; the lens selector is named lenses.
         run: |
           grep -q 'id="searchForm"' index.html
-          grep -q 'id="lenses"' index.html
+          grep -q 'id="lensbar"' index.html
           grep -q 'id="resultList"' index.html
           grep -q 'CRELICS' index.html
+          grep -q 'assets/crelics.js' index.html
