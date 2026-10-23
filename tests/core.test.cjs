@@ -17,7 +17,7 @@ test('the image-inspired POV and search territories are explicit product configu
  assert.match(css,/--red:#a80e27/);assert.match(css,/--branch:#252428/);
 });
 test('search client keeps provider transport separate from interface orchestration',()=>{
- assert.match(client,/URLSearchParams/);assert.match(client,/AbortSignal\.timeout/);assert.match(client,/coverage/);
+ assert.match(client,/URLSearchParams/);assert.match(client,/AbortSignal\.timeout/);assert.match(client,/Search service unavailable/);
  assert.match(app,/searchWeb\(\{query:q,page,mode,seen,limit:20\}\)/);
  assert.match(app,/crelics\.saved/);assert.match(app,/crelics\.history/);
 });
