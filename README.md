@@ -12,7 +12,7 @@
 index.html                  Semantic application shell
 assets/
   crelics.css               Visual design system and responsive layouts
-  crelics.js                Search orchestration and UI state
+  crelics.js                Minimal ES-module entry point\n  app/\n    config.js               Search territories and POV catalogue\n    storage.js              Browser-local persistence\n    utils.js                DOM utilities and safe text escaping\n    search-client.js        Browser-to-Worker transport adapter\n    main.js                 UI orchestration and rendering
 worker/
   index.js                  HTTP entry point and route orchestration
   core.js                   Request validation, CORS and URL normalization
