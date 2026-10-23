@@ -7,14 +7,27 @@ const EXPANSIONS = {
   doctor: ["", "alternative search terms unexpected sources and adjacent concepts", "new angles practical examples and less obvious sources", "different approaches and overlooked evidence", "related terms specialist sources and alternative explanations"],
   valerian: ["", "connected worlds communities ecosystems and wider context", "visual explainers interactive resources maps and related topics", "global perspectives cultures institutions and connected fields", "exploratory resources and surprising connections"]
 };
-export function queryVariants(query, page, mode) {
+const TERRITORIES = {
+  all: ["", "web pages and useful references"],
+  web: ["web pages and websites", "guides documentation and official websites"],
+  research: ["peer reviewed research papers studies datasets and scientific reports", "doi arxiv systematic reviews and research institutions"],
+  books: ["books ebooks authors publishers library catalogs and book reviews", "ISBN publisher catalog and reading lists"],
+  images: ["images photographs illustrations and visual collections", "image galleries visual archives and photographs"],
+  news: ["latest news journalism and current reporting", "news reports dates named sources and independent coverage"],
+  videos: ["videos documentaries lectures and video explainers", "video platforms talks demonstrations and interviews"],
+  places: ["places locations maps institutions and destinations", "official place pages visitor information and geographic context"],
+  products: ["products specifications comparisons and buying guides", "manufacturer product pages independent reviews and prices"],
+  discussions: ["forums community discussions and first hand experiences", "Q&A communities and expert conversations"]
+};
+export function queryVariants(query, page, mode, lens = "all") {
   const expansions = EXPANSIONS[mode] || EXPANSIONS.adaptive;
-  if (page === 1) return [query];
+  const territory = TERRITORIES[lens] || TERRITORIES.all;
+  if (page === 1) return [territory[0] ? query + " " + territory[0] : query];
   const base = expansions[(page - 1) % expansions.length];
   return [
-    base ? query + " " + base : query + " further reading",
-    query + " " + expansions[page % expansions.length],
-    query + " " + expansions[(page + 2) % expansions.length]
+    query + " " + territory[page % territory.length] + (base ? " " + base : ""),
+    query + " " + expansions[page % expansions.length] + " " + territory[0],
+    query + " " + expansions[(page + 2) % expansions.length] + " " + territory[territory.length - 1]
   ];
 }
 export async function searchTavily({ query, apiKey, limit, seen, fetchImpl = fetch }) {
