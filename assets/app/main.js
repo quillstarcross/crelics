@@ -1,6 +1,6 @@
 import { lenses, modes, icons } from './config.js';
 import { load, store } from './storage.js';
-import { $, $, esc, host } from './utils.js';
+import { $, $$, esc, host } from './utils.js';
 import { searchWeb } from './search-client.js';
 let lens='all',mode='adaptive',query='',page=1,records=[],saved=load('crelics.saved',[]),history=load('crelics.history',[]),busy=false,hasMore=false,view='results',tab='all',theme=load('crelics.theme','light');
 function drawLenses(){$('#lensbar').innerHTML=lenses.map(([id,ic,n])=>'<button class="lens" data-lens="'+id+'" aria-pressed="'+(lens===id)+'">'+ic+' '+n+'</button>').join('')}
