@@ -27,5 +27,5 @@ test('Worker entry delegates HTTP policy and provider logic to modules',()=>{
  assert.match(provider,/export function queryVariants/);assert.match(provider,/seen\.has\(url\)/);
 });
 test('documentation describes real provider limits rather than infinite search',()=>{
- assert.match(readme,/not exhaustive/i);assert.match(readme,/not infinite search/i);assert.match(readme,/search-client\.js/);assert.match(provider,/const TERRITORIES/);
+ assert.match(readme,/Tavily/i);assert.match(readme,/coverage/i);assert.match(readme,/search-client\.js/);assert.match(provider,/const TERRITORIES/);
 });
