@@ -13,10 +13,10 @@ export default {
     if(!env.TAVILY_API_KEY) return json({error:"Search provider is not configured. Add TAVILY_API_KEY as a Worker secret."},503,corsOrigin);
     const params=parseSearchRequest(url);
     if(params.error) return json({error:params.error},params.status,corsOrigin);
-    const {query,page,mode,limit,seen}=params;
+    const {query,page,mode,lens,limit,seen}=params;
     try {
-      const results=await searchTavily({query:queryVariants(query,page,mode),apiKey:env.TAVILY_API_KEY,limit,seen});
-      return json({query,page,results,count:results.length,hasMore:results.length>0&&page<100,provider:"Tavily",note:"Results are progressively discovered from the connected search provider; coverage is not exhaustive."},200,corsOrigin);
+      const results=await searchTavily({query:queryVariants(query,page,mode,lens),apiKey:env.TAVILY_API_KEY,limit,seen});
+      return json({query,page,mode,lens,results,count:results.length,hasMore:results.length>0&&page<100,provider:"Tavily",note:"Results are progressively discovered from the connected search provider; coverage is not exhaustive."},200,corsOrigin);
     } catch(error) {
       const status=error.status||502;
       return json({error:error.name==="TimeoutError"?"Search timed out. Try again.":error.message||"Search service is temporarily unavailable."},status,corsOrigin);
